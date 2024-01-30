@@ -5,7 +5,6 @@ import {
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
 import QrReader from "react-qr-scanner";
-import { Link as RouterLink } from "react-router-dom";
 
 export const Home = () => {
   const [scanResult, setScanResult] = useState("Hold QR Steady");
@@ -13,9 +12,7 @@ export const Home = () => {
   const handleScan = (result) => {
     if (result) {
       setScanResult(result);
-      console.log(result)
-
-
+      console.log(result);
     }
   };
 
@@ -30,6 +27,14 @@ export const Home = () => {
           <Typography variant="h6">
             You are signed-in. Select profile to call Microsoft Graph.
           </Typography>
+        </div>
+      </AuthenticatedTemplate>
+
+      <UnauthenticatedTemplate>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <Typography variant="h6">
+            Please sign-in to see your profile information.
+          </Typography>
           <QrReader
             delay={100}
             style={{ width: "100%" }}
@@ -37,12 +42,6 @@ export const Home = () => {
             onScan={handleScan}
           />
         </div>
-      </AuthenticatedTemplate>
-
-      <UnauthenticatedTemplate>
-        <Typography variant="h6">
-          Please sign-in to see your profile information.
-        </Typography>
       </UnauthenticatedTemplate>
     </>
   );
