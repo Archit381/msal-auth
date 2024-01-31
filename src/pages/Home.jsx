@@ -9,13 +9,14 @@ import QrReader from "react-qr-scanner";
 import { Profile } from "./Profile";
 import { InteractionType } from "@azure/msal-browser";
 import { fetchData } from "../fetch";
+import supabase from "../supabase";
 
 export const Home = () => {
   const [scanResult, setScanResult] = useState("Hold QR Steady");
   const [qrStatus, setQrStatus] = useState(false);
   const [graphData, setGraphData] = useState(null);
-  const [userMail,setUserMail]=useState('');
-  const [username,setUserName]=useState('');
+  const [userMail, setUserMail] = useState("");
+  const [username, setUserName] = useState("");
 
   const { result, error } = useMsalAuthentication(InteractionType.Redirect, {
     scopes: ["user.read"],
@@ -40,11 +41,10 @@ export const Home = () => {
     if (!!error) {
       console.log(error);
       return;
-    } 
+    }
 
     if (result) {
-
-      console.log('yes')
+      console.log("yes");
 
       const { accessToken } = result;
       fetchData("https://graph.microsoft.com/v1.0/me", accessToken)
@@ -52,12 +52,33 @@ export const Home = () => {
           setGraphData(response);
 
           console.log(response.mail);
-          console.log(response.displayName) 
-          
+          console.log(response.displayName);
+
           setUserMail(response.mail);
           setUserName(response.displayName);
+
+          feedData();
         })
         .catch((error) => console.log(error));
+    }
+  };
+
+  const feedData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("attendance")
+        .insert([{ id: 1, mail: {userMail}, displayname: {username} }])
+        .select();
+
+        if(data){
+          console.log(data)
+        }
+
+        if(error){
+          console.log(error)
+        }
+    } catch (err) {
+      console.log(err);
     }
   };
 
