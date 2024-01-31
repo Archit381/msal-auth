@@ -12,8 +12,11 @@ import { fetchData } from "../fetch";
 
 export const Home = () => {
   const [scanResult, setScanResult] = useState("Hold QR Steady");
-  const [qrStatus,setQrStatus]=useState(false);
+  const [qrStatus, setQrStatus] = useState(false);
   const [graphData, setGraphData] = useState(null);
+  const [userMail,setUserMail]=useState('');
+  const [username,setUserName]=useState('');
+
   const { result, error } = useMsalAuthentication(InteractionType.Redirect, {
     scopes: ["user.read"],
   });
@@ -25,7 +28,7 @@ export const Home = () => {
 
       setQrStatus(true);
 
-      // startLogin();
+      startLogin();
     }
   };
 
@@ -34,19 +37,26 @@ export const Home = () => {
   };
 
   const startLogin = async () => {
-    if (!!graphData) {
-      return;
-    }
-
     if (!!error) {
       console.log(error);
       return;
-    }
+    } 
 
     if (result) {
+
+      console.log('yes')
+
       const { accessToken } = result;
       fetchData("https://graph.microsoft.com/v1.0/me", accessToken)
-        .then((response) => setGraphData(response))
+        .then((response) => {
+          setGraphData(response);
+
+          console.log(response.mail);
+          console.log(response.displayName) 
+          
+          setUserMail(response.mail);
+          setUserName(response.displayName);
+        })
         .catch((error) => console.log(error));
     }
   };
