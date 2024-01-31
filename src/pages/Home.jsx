@@ -26,11 +26,35 @@ export const Home = () => {
     if (result) {
       setScanResult(result);
 
-      console.log(result.text)
-      console.log(getTokenFromUrl(result.text));
+      console.log(result.text);
+      const token = getTokenFromUrl(result.text);
 
       setQrStatus(true);
       // startLogin();
+      checkTokenValidity(token);
+    }
+  };
+
+  const checkTokenValidity = async (token) => {
+    try {
+      const response = await fetch(
+        `https://sixc1f0487-145f-4e33-8897-641d33f1d0e6.onrender.com/check_status/${token}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data); 
+      } else {
+        throw new Error("Network response was not ok.");
+      }
+    } catch (error) {
+      console.error("Error during token validity check:", error);
     }
   };
 
@@ -58,29 +82,29 @@ export const Home = () => {
           setUserMail(response.mail);
           setUserName(response.displayName);
 
-          const mail=response.mail;
-          const name=response.displayName;
+          const mail = response.mail;
+          const name = response.displayName;
 
-          feedData(mail,name);
+          feedData(mail, name);
         })
         .catch((error) => console.log(error));
     }
   };
 
-  const feedData = async (mail,name) => {
+  const feedData = async (mail, name) => {
     try {
       const { data, error } = await supabase
         .from("attendance")
         .insert([{ id: 1, mail: mail, displayname: name }])
         .select();
 
-        if(data){
-          console.log(data)
-        }
+      if (data) {
+        console.log(data);
+      }
 
-        if(error){
-          console.log(error)
-        }
+      if (error) {
+        console.log(error);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -88,22 +112,22 @@ export const Home = () => {
 
   const getTokenFromUrl = (url) => {
     // Split the URL by '?' and take the second part which contains token
-    const queryString = url.split('?')[1];
+    const queryString = url.split("?")[1];
     if (queryString) {
-        // Split the query string by '&' to get key-value pairs
-        const queryParams = queryString.split('&');
-        // Iterate through key-value pairs to find the token
-        for (const param of queryParams) {
-            const [key, value] = param.split('=');
-            if (key === 'token') {
-                // Return the value of the token
-                return value;
-            }
+      // Split the query string by '&' to get key-value pairs
+      const queryParams = queryString.split("&");
+      // Iterate through key-value pairs to find the token
+      for (const param of queryParams) {
+        const [key, value] = param.split("=");
+        if (key === "token") {
+          // Return the value of the token
+          return value;
         }
+      }
     }
     // Return null if token is not found
     return null;
-};  
+  };
 
   return (
     <>
