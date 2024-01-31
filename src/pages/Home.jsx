@@ -17,6 +17,7 @@ export const Home = () => {
   const [graphData, setGraphData] = useState(null);
   const [userMail, setUserMail] = useState("");
   const [username, setUserName] = useState("");
+  const [urlValidity,setUrlValidity]=useState('');
 
   const { result, error } = useMsalAuthentication(InteractionType.Redirect, {
     scopes: ["user.read"],
@@ -30,8 +31,8 @@ export const Home = () => {
       const token = getTokenFromUrl(result.text);
 
       setQrStatus(true);
-      // startLogin();
       checkTokenValidity(token);
+
     }
   };
 
@@ -49,7 +50,17 @@ export const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data); 
+        console.log(data.status);
+        
+
+        if(data.status==="valid"){
+          // console.log('yes mom');
+          startLogin();
+        }
+        else if(data.status==="invalid"){
+          console.log("invalid URL couldnt proceed further");
+        }
+
       } else {
         throw new Error("Network response was not ok.");
       }
