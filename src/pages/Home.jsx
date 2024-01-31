@@ -25,10 +25,12 @@ export const Home = () => {
   const handleScan = (result) => {
     if (result) {
       setScanResult(result);
-      console.log(result);
+
+      console.log(result.text)
+      console.log(getTokenFromUrl(result.text));
 
       setQrStatus(true);
-      startLogin();
+      // startLogin();
     }
   };
 
@@ -83,6 +85,25 @@ export const Home = () => {
       console.log(err);
     }
   };
+
+  const getTokenFromUrl = (url) => {
+    // Split the URL by '?' and take the second part which contains token
+    const queryString = url.split('?')[1];
+    if (queryString) {
+        // Split the query string by '&' to get key-value pairs
+        const queryParams = queryString.split('&');
+        // Iterate through key-value pairs to find the token
+        for (const param of queryParams) {
+            const [key, value] = param.split('=');
+            if (key === 'token') {
+                // Return the value of the token
+                return value;
+            }
+        }
+    }
+    // Return null if token is not found
+    return null;
+};  
 
   return (
     <>
