@@ -28,7 +28,6 @@ export const Home = () => {
       console.log(result);
 
       setQrStatus(true);
-
       startLogin();
     }
   };
@@ -57,17 +56,20 @@ export const Home = () => {
           setUserMail(response.mail);
           setUserName(response.displayName);
 
-          feedData();
+          const mail=response.mail;
+          const name=response.displayName;
+
+          feedData(mail,name);
         })
         .catch((error) => console.log(error));
     }
   };
 
-  const feedData = async () => {
+  const feedData = async (mail,name) => {
     try {
       const { data, error } = await supabase
         .from("attendance")
-        .insert([{ id: 1, mail: {userMail}, displayname: {username} }])
+        .insert([{ id: 1, mail: mail, displayname: name }])
         .select();
 
         if(data){
