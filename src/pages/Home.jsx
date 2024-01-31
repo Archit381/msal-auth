@@ -17,7 +17,7 @@ export const Home = () => {
   const [graphData, setGraphData] = useState(null);
   const [userMail, setUserMail] = useState("");
   const [username, setUserName] = useState("");
-  const [urlValidity,setUrlValidity]=useState('');
+  const [urlValidity, setUrlValidity] = useState("");
 
   const { result, error } = useMsalAuthentication(InteractionType.Redirect, {
     scopes: ["user.read"],
@@ -32,7 +32,6 @@ export const Home = () => {
 
       setQrStatus(true);
       checkTokenValidity(token);
-
     }
   };
 
@@ -51,16 +50,14 @@ export const Home = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data.status);
-        
 
-        if(data.status==="valid"){
+        if (data.status === "valid") {
           // console.log('yes mom');
           startLogin();
-        }
-        else if(data.status==="invalid"){
+        } else if (data.status === "invalid") {
           console.log("invalid URL couldnt proceed further");
+          setQrStatus(false);
         }
-
       } else {
         throw new Error("Network response was not ok.");
       }
@@ -104,9 +101,17 @@ export const Home = () => {
 
   const feedData = async (mail, name) => {
     try {
+      let { data: prevData, err } = await supabase
+        .from("attendance")
+        .select("*");
+      
+      if (prevData) {
+        console.log(prevData.length);
+      }
+
       const { data, error } = await supabase
         .from("attendance")
-        .insert([{ id: 1, mail: mail, displayname: name }])
+        .insert([{ id: prevData.length + 1, mail: mail, displayname: name }])
         .select();
 
       if (data) {
